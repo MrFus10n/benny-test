@@ -1,0 +1,142 @@
+{
+  "openapi": "3.0.2",
+  "info": {
+    "title": "",
+    "version": ""
+  },
+  "paths": {
+    "/api/user/current/": {
+      "get": {
+        "operationId": "currentUser",
+        "description": "",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/User"
+                }
+              }
+            },
+            "description": ""
+          }
+        },
+        "tags": [
+          "api"
+        ]
+      }
+    },
+    "/api/text/run/": {
+      "post": {
+        "operationId": "runParser",
+        "description": "",
+        "parameters": [],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Parser"
+              }
+            },
+            "application/x-www-form-urlencoded": {
+              "schema": {
+                "$ref": "#/components/schemas/Parser"
+              }
+            },
+            "multipart/form-data": {
+              "schema": {
+                "$ref": "#/components/schemas/Parser"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Parser"
+                }
+              }
+            },
+            "description": ""
+          }
+        },
+        "tags": [
+          "api"
+        ]
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "User": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "readOnly": true
+          },
+          "first_name": {
+            "type": "string",
+            "maxLength": 150
+          },
+          "last_name": {
+            "type": "string",
+            "maxLength": 150
+          },
+          "is_authenticated": {
+            "type": "boolean",
+            "readOnly": true
+          }
+        }
+      },
+      "Parser": {
+        "type": "object",
+        "properties": {
+          "text": {
+            "type": "string",
+            "writeOnly": true
+          },
+          "conditions": {
+            "type": "object",
+            "properties": {
+              "periods": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "start": {
+                      "type": "string",
+                      "readOnly": true
+                    },
+                    "end": {
+                      "type": "string",
+                      "readOnly": true
+                    }
+                  }
+                }
+              },
+              "amount_max": {
+                "type": "string",
+                "readOnly": true
+              },
+              "amount_min": {
+                "type": "string",
+                "readOnly": true
+              }
+            },
+            "required": [
+              "periods"
+            ],
+            "readOnly": true
+          }
+        },
+        "required": [
+          "text"
+        ]
+      }
+    }
+  }
+}

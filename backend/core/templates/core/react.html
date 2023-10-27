@@ -1,0 +1,19 @@
+{% load render_bundle from webpack_loader %}
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="minimum-scale=1, initial-scale=1, width=device-width" />
+    <title>Benny test task</title>
+  </head>
+  <body>
+    <noscript>You need to enable JavaScript to run this app.</noscript>
+    {% render_bundle 'main' 'css'%}
+    <script>
+      window.GLOBAL_CONFIG = {{ config|safe }};
+    </script>
+    <div id="root"></div>
+    {% render_bundle 'main' 'js' attrs='crossorigin' %}
+  </body>
+</html>

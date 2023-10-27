@@ -1,0 +1,63 @@
+services:
+  backend:
+    image: benny_test_backend:local
+    build:
+      context: ./backend
+      dockerfile: ./conf/Dockerfile
+    depends_on:
+      api-client-builder:
+        condition: service_started
+      db:
+        condition: service_started
+      frontend:
+        condition: service_healthy
+    entrypoint: ["sh", "conf/entrypoint-dev.sh"]
+    environment:
+      DB_NAME: "postgres"
+      DB_USER: "postgres"
+      DB_HOST: "db"
+      DB_PASSWORD: "dev_pass"
+      DB_PORT: "5432"
+      DEBUG: "1"
+      HOST: "*"
+      SECRET_KEY: "tkm@s&n5gw1%giy-!tdhjs*s9jolldkxxh=u=(cx(@+)0v-md!"
+    env_file:
+      - .env
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./backend/:/code/
+      - ./frontend/build/:/shared_data/  # Provides the bundle to serve
+
+  db:
+    image: postgres:15.3
+    environment:
+      POSTGRES_PASSWORD: "dev_pass"
+
+  frontend:
+    image: benny_test_frontend:local
+    build:
+      context: ./frontend
+    entrypoint: ["sh", "entrypoint.sh"]
+    environment: &frontend_environment
+      IP: 127.0.0.1
+      NODE_ENV: development
+    ports:
+      - "3000:3000"
+    volumes: &frontend_volumes
+      - ./frontend/:/code/
+      - ./backend/conf/openapi_schema.json:/schemas/backend_openapi_schema.json
+    healthcheck:
+      # Verify that webpack-stats.json is created for backend to get the bundle address to serve
+      test: ["CMD-SHELL", "if [ -f /code/build/webpack-stats.json ]; then exit 0; else exit 1; fi"]
+      interval: 1s
+      timeout: 1s
+      retries: 60
+
+  api-client-builder:
+    image: benny_test_api-client-builder:local
+    build:
+      context: ./frontend
+    entrypoint: ["bash", "-c", "nodemon --watch /schemas/backend_openapi_schema.json --exec 'yarn build_api_client'"]
+    environment: *frontend_environment
+    volumes: *frontend_volumes

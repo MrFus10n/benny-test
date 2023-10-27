@@ -1,0 +1,7 @@
+django==4.2.6
+django-allauth==0.57.0
+djangorestframework==3.14.0
+django-webpack-loader==2.0.1
+psycopg2==2.9.9
+spacy==3.7.2
+uritemplate==4.1.1
